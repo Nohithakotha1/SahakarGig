@@ -11,7 +11,7 @@ interface AuthenticatedRequest extends Request {
 
 async function startServer() {
   const app = express();
-  const PORT = process.env.INSURANCE_PORT || (process.env.PORT ? parseInt(process.env.PORT, 10) : 3001);
+  const PORT = Number(process.env.INSURANCE_PORT || process.env.PORT || 3001);
 
   app.use(express.json());
 

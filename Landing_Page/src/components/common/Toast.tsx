@@ -4,6 +4,10 @@ import { CheckCircle2, AlertTriangle, AlertCircle, Info, X } from 'lucide-react'
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 export interface ToastMessage {
+  id: string;
+  type: ToastType;
+  title: string;
+  message?: string;
 }
 
 interface ToastContextType {
