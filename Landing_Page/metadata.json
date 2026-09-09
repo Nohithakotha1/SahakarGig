@@ -1,5 +1,5 @@
 {
-  "name": "SahakarGig",
+  "name": "SahakarGig-Landing",
   "description": "A digital platform built to support gig and daily-wage workers by helping them manage their work, income, benefits, and financial security in one place.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

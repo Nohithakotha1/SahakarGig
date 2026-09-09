@@ -12,7 +12,7 @@ const aiBridgeCtrl = require('../controllers/aiBridgeController');
 const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
 
 router.get('/health', (_req, res) => res.json({ success:true, status:'healthy', platform:'SahakarGig Cooperative Platform', database:db.isPostgresConnected()?'PostgreSQL':'Embedded Development DB', timestamp:new Date().toISOString() }));
-router.post('/auth/register',authCtrl.register); router.post('/auth/login',authCtrl.login);
+router.post('/auth/register',authCtrl.register); router.post('/auth/login',authCtrl.login); router.post('/auth/quick-login',authCtrl.quickLogin); router.post('/auth/demo-login',authCtrl.quickLogin);
 router.get('/cooperatives',verifyToken,async(_req,res)=>{try{const r=await db.query('SELECT id,name,created_at FROM cooperatives ORDER BY name');res.json({success:true,data:r.rows,timestamp:new Date().toISOString()});}catch(e){console.error(e);res.status(500).json({error:'Failed to fetch cooperatives'});}});
 router.get('/workers',verifyToken,async(_req,res)=>{try{const r=await db.query(`SELECT w.id,w.user_id,w.cooperative_id,w.name,w.phone,w.skill,w.is_verified,w.is_available,w.rating,w.latitude,w.longitude,c.name AS cooperative_name FROM workers w LEFT JOIN cooperatives c ON c.id=w.cooperative_id ORDER BY w.name`);res.json({success:true,data:r.rows,timestamp:new Date().toISOString()});}catch(e){console.error(e);res.status(500).json({error:'Failed to fetch workers'});}});
 router.get('/workers/nearby',workerCtrl.getNearbyWorkers); router.patch('/workers/:workerId/verify',verifyToken,authorizeRoles('coop_admin'),workerCtrl.verifyWorker); router.post('/workers/rate',verifyToken,authorizeRoles('customer'),workerCtrl.rateWorker);

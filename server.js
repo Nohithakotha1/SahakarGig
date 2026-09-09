@@ -35,13 +35,25 @@ app.set('io', io);
 
 const distPath = path.join(__dirname, 'Frontend', 'dist');
 if (!fs.existsSync(path.join(distPath, 'index.html'))) {
-  console.error('Frontend build missing. Run: npm run build');
-  process.exitCode = 1;
-} else {
+  try {
+    const { execSync } = require('child_process');
+    console.log('[SahakarGig] Building Frontend...');
+    execSync('npm --prefix Frontend run build', { stdio: 'inherit' });
+  } catch (err) {
+    console.error('[SahakarGig] Failed to build Frontend:', err.message);
+  }
+}
+
+if (fs.existsSync(path.join(distPath, 'index.html'))) {
   app.use(express.static(distPath));
   app.get('*', (req, res) => {
     if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API endpoint not found' });
     res.sendFile(path.join(distPath, 'index.html'));
+  });
+} else {
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api/')) return res.status(404).json({ error: 'API endpoint not found' });
+    res.status(503).send('Frontend is building. Please refresh in a moment.');
   });
 }
 

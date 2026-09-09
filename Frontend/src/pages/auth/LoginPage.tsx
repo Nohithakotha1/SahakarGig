@@ -12,7 +12,8 @@ import {
   Wrench, 
   ShieldAlert, 
   ArrowRight,
-  ShieldCheck 
+  ShieldCheck,
+  AlertCircle
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -21,25 +22,36 @@ export const LoginPage: React.FC = () => {
   const [identifier, setIdentifier] = useState('priya.sharma@example.com');
   const [password, setPassword] = useState('demo1234');
   const [rememberMe, setRememberMe] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(identifier, password);
-    // Navigation based on resolved role
-    if (identifier.includes('worker') || identifier.includes('ravi')) {
-      navigate('/worker/dashboard');
-    } else if (identifier.includes('admin') || identifier.includes('gov')) {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/customer/dashboard');
+    setErrorMessage(null);
+    try {
+      await login(identifier, password);
+      const savedRole = localStorage.getItem('sahakar_user_role') || '';
+      if (savedRole === 'worker' || identifier.includes('worker') || identifier.includes('ravi')) {
+        navigate('/worker/dashboard');
+      } else if (savedRole === 'admin' || savedRole === 'coop_admin' || identifier.includes('admin') || identifier.includes('gov')) {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/customer/dashboard');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Unable to sign in. Please verify your credentials.');
     }
   };
 
   const handleQuickRole = async (role: 'customer' | 'worker' | 'admin') => {
-    await loginAs(role);
-    if (role === 'customer') navigate('/customer/dashboard');
-    if (role === 'worker') navigate('/worker/dashboard');
-    if (role === 'admin') navigate('/admin/dashboard');
+    setErrorMessage(null);
+    try {
+      await loginAs(role);
+      if (role === 'customer') navigate('/customer/dashboard');
+      if (role === 'worker') navigate('/worker/dashboard');
+      if (role === 'admin') navigate('/admin/dashboard');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Quick login failed.');
+    }
   };
 
   return (
@@ -96,6 +108,13 @@ export const LoginPage: React.FC = () => {
 
         {/* Standard Login Card */}
         <Card className="p-6 sm:p-8 space-y-5">
+          {errorMessage && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-800 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Email or Mobile Number"

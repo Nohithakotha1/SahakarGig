@@ -16,7 +16,8 @@ async function seed() {
 
         const users = await db.query(`
             INSERT INTO users (name, email, password_hash, phone, role) VALUES
-            ('Coop Admin', 'demo.admin@sahakargig.local', $1, '9998887770', 'coop_admin'),
+            ('Dr. Rameshwar Rao (NCCT Federation)', 'demo.admin@sahakargig.local', $1, '9998887770', 'coop_admin'),
+            ('Priya Sharma', 'priya.sharma@example.com', $1, '9876543219', 'customer'),
             ('John Customer', 'demo.customer@sahakargig.local', $1, '9998887771', 'customer'),
             ('Ravi Kumar', 'ravi.worker@sahakargig.local', $1, '9876543210', 'worker')
             RETURNING id, role, phone

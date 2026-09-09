@@ -42,8 +42,30 @@ export const authService = {
     return { user: mapUser(data.user, identifier), token: data.token };
   },
 
-  async loginAs(_role: UserRole): Promise<AuthResponse> {
-    throw new Error('Demo login is disabled. Please sign in with a registered SahakarGig account.');
+  async loginAs(role: UserRole): Promise<AuthResponse> {
+    const backendRole = role === 'admin' ? 'coop_admin' : role;
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/quick-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: backendRole })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.token && data.user) {
+        return { user: mapUser(data.user, data.user.email || ''), token: data.token };
+      }
+    } catch (err) {
+      console.warn('Quick login API error, falling back to standard login:', err);
+    }
+
+    const demoProfiles: Record<string, { email: string; pass: string }> = {
+      customer: { email: 'priya.sharma@example.com', pass: 'demo1234' },
+      worker: { email: 'ravi.worker@sahakargig.local', pass: 'demo1234' },
+      admin: { email: 'demo.admin@sahakargig.local', pass: 'demo1234' }
+    };
+
+    const target = demoProfiles[role] || demoProfiles.customer;
+    return this.login(target.email, target.pass, role);
   },
 
   async register(userData: Partial<User> & { password?: string }): Promise<AuthResponse> {

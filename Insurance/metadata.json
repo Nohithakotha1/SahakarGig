@@ -1,5 +1,5 @@
 {
-  "name": "SahakarGig",
+  "name": "SahakarGig-Insurance",
   "description": "SahakarGig Worker Welfare Portal - Production-Ready Micro-Insurance and Protection for Gig and Daily Wage Earners",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

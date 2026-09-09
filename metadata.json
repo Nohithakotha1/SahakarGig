@@ -1,0 +1,6 @@
+{
+  "name": "SahakarGig",
+  "description": "Cooperative Gig Services Platform connecting verified skilled workers from labour cooperatives with households and communities.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

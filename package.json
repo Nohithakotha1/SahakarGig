@@ -8,7 +8,8 @@
     "postinstall": "npm --prefix Frontend install --no-audit --no-fund && npm --prefix Backend install --no-audit --no-fund && npm --prefix Frontend run build",
     "build": "npm --prefix Frontend run build",
     "start": "node server.js",
-    "dev": "npm --prefix Frontend run dev",
+    "dev": "npm run build && node server.js",
+    "lint": "npm --prefix Frontend run lint",
     "backend:dev": "npm --prefix Backend run dev",
     "insurance:dev": "npm --prefix Insurance run dev",
     "seed": "node Database/seed.js"

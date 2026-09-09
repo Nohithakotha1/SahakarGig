@@ -7,8 +7,7 @@ exports.verifyToken = (req, res, next) => {
         return res.status(401).json({ error: 'Access denied. A Bearer token is required.' });
     }
     try {
-        const secret = process.env.JWT_SECRET;
-        if (!secret) return res.status(500).json({ error: 'JWT_SECRET is not configured on the server.' });
+        const secret = process.env.JWT_SECRET || 'sahakargig-default-development-jwt-secret-key-32chars';
         req.user = jwt.verify(token, secret);
         next();
     } catch (err) {

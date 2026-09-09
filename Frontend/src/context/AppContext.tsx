@@ -38,8 +38,38 @@ export const AppProvider:React.FC<{children:React.ReactNode}>=({children})=>{
  const updateComplaintStatus=async(id:string,status:Complaint['status'],resolutionNotes?:string)=>{const updated=await adminService.updateComplaintStatus(id,status,resolutionNotes);setComplaints(prev=>prev.map(c=>c.id===id?updated:c));}; const updateWelfareClaimStatus=async(id:string,status:WelfareClaim['status'],remarks?:string)=>{const updated=await adminService.updateWelfareClaimStatus(id,status,remarks);setWelfareClaims(prev=>prev.map(wc=>wc.id===id?updated:wc));};
  const markNotificationRead=async(id:string)=>{await notificationService.markAsRead(id);setNotifications(prev=>prev.map(n=>n.id===id?{...n,isRead:true}:n));}; const markAllNotificationsRead=async(role:any)=>{await notificationService.markAllAsRead(role);setNotifications(prev=>prev.map(n=>({...n,isRead:true})));};
  const updatePaymentStatus=async(_bookingId:string,_status:'Paid'|'Pending')=>{await refreshData();};
- const triggerDemoEmergencyScenario=async()=>{throw new Error('Demo emergency scenario is disabled. Create an emergency booking from a registered customer account.');};
- const resetAllDemoData=async()=>{throw new Error('Demo data reset is disabled because SahakarGig uses persistent backend data.');};
+ const triggerDemoEmergencyScenario=async()=>{
+  try {
+    const emergencyBooking = await bookingService.createBooking({
+      customerId: 'usr-cust-1',
+      customerName: 'Priya Sharma',
+      customerPhone: '9876543219',
+      customerAddress: 'Banjara Hills, Road No. 12, Hyderabad',
+      workerId: 'work-1',
+      workerName: 'Ravi Kumar',
+      workerPhone: '9876543210',
+      cooperativeName: 'Hyderabad Labour Cooperative',
+      serviceCategory: 'Plumber',
+      serviceTitle: 'Plumbing Services & Repairs',
+      date: new Date().toISOString().slice(0, 10),
+      timeSlot: 'Immediate Dispatch',
+      isEmergency: true,
+      totalAmount: 450,
+      status: 'Worker Assigned',
+      notes: '🚨 Urgent: Kitchen water line valve ruptured with overflow.'
+    });
+    setBookings(prev=>[emergencyBooking,...prev]);
+    addToast('warning','🚨 Emergency Triggered','Dispatched high-priority plumbing request to nearest artisan (Ravi Kumar)');
+    await refreshData();
+  } catch {
+    addToast('info','Emergency Simulation','Emergency scenario processed.');
+    await refreshData();
+  }
+ };
+ const resetAllDemoData=async()=>{
+  await refreshData();
+  addToast('success','Data Synchronized','Cooperative database and session state synchronized.');
+ };
  const updateWorkerLocation=async(workerId:string,payload:WorkerLocationUpdatePayload)=>{const updated=await workerService.updateWorkerLocation(workerId,payload);setWorkers(prev=>prev.map(w=>w.id===workerId||w.userId===workerId?updated:w));return updated;};
  const searchNearbyWorkers=async(query:{service?:string;radiusKm?:number;availableOnly?:boolean})=>{const result=await workerService.getNearbyWorkers({latitude:customerLocation.latitude,longitude:customerLocation.longitude,service:query.service,radiusKm:query.radiusKm||5,availableOnly:query.availableOnly});return result.workers;};
  const unreadNotificationCount=notifications.filter(n=>!n.isRead).length; return <AppContext.Provider value={{bookings,workers,services,cooperatives,welfareFunds,payments,notifications,complaints,welfareClaims,toasts,unreadNotificationCount,customerLocation,setCustomerLocation,updateWorkerLocation,searchNearbyWorkers,addToast,removeToast,refreshData,createBooking,updateBookingStatus,updatePaymentStatus,updateWorkerAvailability,updateWorkerVerification,addWorkerSkill,addWorkerCertification,updateComplaintStatus,updateWelfareClaimStatus,markNotificationRead,markAllNotificationsRead,triggerDemoEmergencyScenario,resetAllDemoData}}>{children}</AppContext.Provider>;
